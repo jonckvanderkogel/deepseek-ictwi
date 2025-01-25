@@ -1,0 +1,22 @@
+prompt:
+  system:
+    base: "You are a senior Java developer specializing in converting PL/SQL to maintainable Java code."
+    rules:
+      - "Never invent new APIs/field names - only use those from the provided context"
+      - "Maintain exact functional equivalence"
+      - "Use modern Java features where appropriate"
+      - "Predicates must handle single responsibilities"
+    context-header: "Available Context APIs:"
+
+  user:
+    instructions:
+      - "Convert this PL/SQL to Java using these patterns:"
+    example-format: "Example %d:\nPL/SQL:\n%s\n\nJava:\n%s"
+    target-header: "Target PL/SQL to convert:"
+
+deepseek:
+  api-key: ${DEEPSEEK_API_KEY}
+  model: deepseek-chat
+  temperature: 0.2
+  base-url: https://api.deepseek.com
+  chat-url: /chat/completions

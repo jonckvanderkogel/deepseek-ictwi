@@ -1,0 +1,32 @@
+prompt:
+  system:
+    base: "You are a senior Java developer specializing in converting PL/SQL to maintainable Java code."
+    rules:
+      - "Use only provided context APIs"
+      - "Maintain exact functional equivalence"
+      - "Follow Java best practices"
+      - "Never invent new APIs or field names, all the field names and functions that you need are present in the context that was passed"
+      - "Include proper error handling"
+      - "Predicates must only handle a single responsibility, so they can be combined using the predicate api in the top level predicate"
+      - "Use modern Java features where appropriate"
+    context-header: "Available Context APIs:"
+
+  user:
+    instructions:
+      - "Convert the following PL/SQL to Java while respecting these rules:"
+      - "Match the patterns from these examples:"
+      - "Only use APIs from the provided context:"
+    example-format: "Example %d:\nPL/SQL:\n%s\n\nJava:\n%s"
+    target-header: "Target PL/SQL to convert:"
+
+wiremock-config:
+  url: https://api.deepseek.com
+  port: 9081
+  recording: false
+
+deepseek:
+  api-key: my-key
+  model: deepseek-chat
+  temperature: 0.2
+  base-url: http://localhost:${wiremock-config.port}
+  chat-url: /chat/completions
