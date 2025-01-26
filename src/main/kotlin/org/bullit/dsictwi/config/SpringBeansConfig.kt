@@ -31,9 +31,15 @@ class SpringBeansConfig {
         codeReader: CodeReader,
         appConfig: AppConfig
     ): SimilarityService {
-        val corpus = codeReader.getCodePairs().map { codePairs ->
-            buildCorpus(codePairs.map { it.plsql }, appConfig.ngramSize)
-        }.getOrElse { throw RuntimeException("Could not build corpus") }
+        val corpus = codeReader
+            .getCodePairs()
+            .map { codePairs ->
+                buildCorpus(
+                    codePairs.map { it.plsql },
+                    appConfig.ngramSize
+                )
+            }
+            .getOrElse { throw RuntimeException("Could not build corpus") }
 
         return SimilarityService(corpus, appConfig.ngramSize)
     }

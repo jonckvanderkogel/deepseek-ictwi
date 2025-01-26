@@ -51,7 +51,7 @@ class SimilarityService(
                 .toDoubleArray())
     }
 
-    fun cosineSimilarity(v1: RealVector, v2: RealVector): Double {
+    private fun cosineSimilarity(v1: RealVector, v2: RealVector): Double {
         val sim =  v1.cosine(v2)
         return sim
     }

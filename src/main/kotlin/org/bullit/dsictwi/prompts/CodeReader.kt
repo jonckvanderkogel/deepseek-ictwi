@@ -1,6 +1,7 @@
 package org.bullit.dsictwi.prompts
 
 import arrow.core.Either
+import arrow.core.Either.Companion.catch
 import arrow.core.nel
 import arrow.core.raise.catch
 import arrow.core.raise.either
@@ -50,7 +51,7 @@ class CodeReader(
     private fun Resource.readText(): String =
         inputStream.bufferedReader().use { it.readText() }
 
-    private fun readCodePair(number: Int): Either<ApplicationErrors, CodePair> = Either.catch {
+    private fun readCodePair(number: Int): Either<ApplicationErrors, CodePair> = catch {
         val plsql = readResource("plsql-$number.txt")
         val java = readResource("java-$number.txt")
         CodePair(plsql, java)
