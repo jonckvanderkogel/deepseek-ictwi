@@ -13,6 +13,11 @@ Then call the API:
 curl localhost:8080/generate/1
 ```
 
+To pretty print the output of the API call, call the service like this:
+```
+curl -s localhost:8080/generate/1 | jq -r '.choices[0].message.content'
+```
+
 ### Running with 1Password integration
 To not have to manually set the environment variables, you can use 1Password integration to set
 them at runtime.
