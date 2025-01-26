@@ -30,3 +30,6 @@ deepseek:
   temperature: 0.2
   base-url: http://localhost:${wiremock-config.port}
   chat-url: /chat/completions
+
+app:
+  ngram-size: 3

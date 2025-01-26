@@ -47,5 +47,9 @@ class ApiError(message: String = "Error interacting with the DeepSeek API") : Ab
     message = message
 )
 
+class MissingDocumentVector(document: String) : AbstractApplicationError(
+    message = "Missing document vector for $document"
+)
+
 fun <T : ApplicationError> NonEmptyList<T>.joinMessages(separator: CharSequence = ", "): String =
     this.map { it }.joinToString(separator = separator)

@@ -9,30 +9,48 @@ import org.bullit.dsictwi.error.joinMessages
 import org.bullit.dsictwi.prompts.CodeReader
 import org.bullit.dsictwi.prompts.DeepSeekClient
 import org.bullit.dsictwi.prompts.PromptBuilder
+import org.bullit.dsictwi.similarity.SimilarityService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class CodeGenController(
     private val codeReader: CodeReader,
+    private val similarityService: SimilarityService,
     private val promptBuilder: PromptBuilder,
     private val deepSeekClient: DeepSeekClient
 ) {
+    companion object {
+        private val logger = logger()
+    }
+
     @GetMapping("/generate/{number}")
-    suspend fun generateCode(@PathVariable number: Int) = either {
+    suspend fun generateCode(
+        @PathVariable number: Int,
+        @RequestParam(name = "use-all-examples", defaultValue = "false") useAllExamples: Boolean
+    ) = handleRequest(number, useAllExamples)
+
+    private suspend fun handleRequest(
+        number: Int,
+        useAllExamples: Boolean
+    ) = either {
         if (number !in 1..10) raise(InvalidInputNumber(number).nel())
-
         val codePairs = codeReader.getCodePairs().bind()
+        val (candidates, targetPair) = codePairs.extractElementAt(number - 1)
 
-        val (examples, target) = codePairs.extractElementAt(number - 1)
+        val examples = if (useAllExamples) {
+            candidates
+        } else {
+            similarityService.findSimilarExamples(targetPair.plsql, candidates).bind()
+        }
 
         val context = codeReader.getContextJava().bind()
-
         val systemMessage = promptBuilder.buildSystemPrompt(context)
-        val userMessage = promptBuilder.buildUserPrompt(examples, target.plsql)
+        val userMessage = promptBuilder.buildUserPrompt(examples, targetPair.plsql)
 
         deepSeekClient.generateCode(listOf(systemMessage, userMessage)).bind()
     }.toHttpResponse()
@@ -46,11 +64,13 @@ class CodeGenController(
 
     private fun <T> Either<ApplicationErrors, T>.toHttpResponse() =
         fold(
-            ifLeft = {
-                ResponseEntity(it.joinMessages(), HttpStatus.BAD_REQUEST)
+            ifLeft = { errors ->
+                ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(mapOf("message" to errors.joinMessages()))
             },
-            ifRight = {
-                ResponseEntity(it, HttpStatus.OK)
+            ifRight = { result ->
+                ResponseEntity.ok(result)
             }
         )
 }

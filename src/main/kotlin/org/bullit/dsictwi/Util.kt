@@ -10,6 +10,10 @@ import org.bullit.dsictwi.error.ApiError
 import org.bullit.dsictwi.error.ApplicationError
 import org.bullit.dsictwi.error.ApplicationErrors
 import reactor.core.publisher.Mono
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+inline fun <reified T> T.logger(): Logger = LoggerFactory.getLogger(T::class.java)
 
 suspend inline fun <reified T> Mono<T>.toEither(crossinline errorFun: (throwable: Throwable) -> ApplicationError): Either<ApplicationError, T> =
     map<Either<ApplicationError, T>> { it.right() }
