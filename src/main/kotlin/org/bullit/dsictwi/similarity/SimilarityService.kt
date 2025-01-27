@@ -31,7 +31,7 @@ class SimilarityService(
             .map { (example, _) -> example }
     }
 
-    private fun fetchDocumentVector(corpus: Corpus, plsql: String): Either<ApplicationErrors, RealVector> = either {
+    private fun fetchDocumentVector(corpus: Corpus, plsql: String) = either {
         corpus.documentVectors[plsql]
             ?: raise(MissingDocumentVector(plsql.take(30) + "...").nel())
     }
@@ -51,8 +51,5 @@ class SimilarityService(
                 .toDoubleArray())
     }
 
-    private fun cosineSimilarity(v1: RealVector, v2: RealVector): Double {
-        val sim =  v1.cosine(v2)
-        return sim
-    }
+    private fun cosineSimilarity(v1: RealVector, v2: RealVector) =  v1.cosine(v2)
 }
