@@ -1,0 +1,38 @@
+{
+  "id" : "bcc19e75-3514-4889-8769-508ec78424e0",
+  "name" : "chat_completions",
+  "request" : {
+    "url" : "/chat/completions",
+    "method" : "POST",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "*/*"
+      }
+    },
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"messages\":[{\"role\":\"system\",\"content\":\"you are an assistant helping me run my integration test.\"},{\"role\":\"user\",\"content\":\"only return the word 'foo' as a response please, this is for a test.\"}],\"model\":\"deepseek-chat\",\"temperature\":0.2}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"id\":\"ab0d8942-a367-4be3-be70-34b9dc9d62a0\",\"object\":\"chat.completion\",\"created\":1738193530,\"model\":\"deepseek-chat\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"foo\"},\"logprobs\":null,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":32,\"completion_tokens\":1,\"total_tokens\":33,\"prompt_tokens_details\":{\"cached_tokens\":0},\"prompt_cache_hit_tokens\":0,\"prompt_cache_miss_tokens\":32},\"system_fingerprint\":\"fp_3a5770e1b4\"}",
+    "headers" : {
+      "CF-RAY" : "909d0515cedbf5e7-AMS",
+      "Server" : "cloudflare",
+      "vary" : [ "origin, access-control-request-method, access-control-request-headers", "accept-encoding" ],
+      "cf-cache-status" : "DYNAMIC",
+      "strict-transport-security" : "max-age=31536000; includeSubDomains; preload",
+      "Date" : "Wed, 29 Jan 2025 23:32:10 GMT",
+      "access-control-allow-credentials" : "true",
+      "x-content-type-options" : "nosniff",
+      "x-ds-trace-id" : "c2cd69edd39e31c3751aabbfce1d0dea",
+      "Set-Cookie" : [ "HWWAFSESTIME=1738193525619; path=/", "HWWAFSESID=f6ebc18ab08d66b1b79; path=/", "__cf_bm=q2LqEQ_MDYHgMTbu0XspDJaQvHciN5G_xpP0Yjuah34-1738193530-1.0.1.1-XWfrq.Y80_d1eeAXZ9WqFrNJl8iPacZZTNVCa45pXJXF8iMB_4.6aJUHNgU3zhed3JFMhHvOGQY8q3CcQp2otA; path=/; expires=Thu, 30-Jan-25 00:02:10 GMT; domain=.deepseek.com; HttpOnly; Secure; SameSite=None" ],
+      "Content-Type" : "application/json"
+    }
+  },
+  "uuid" : "bcc19e75-3514-4889-8769-508ec78424e0",
+  "persistent" : true,
+  "insertionIndex" : 3
+}

@@ -1,7 +1,10 @@
 package org.bullit.dsictwi.prompts
 
 import arrow.core.Either
+import io.github.resilience4j.reactor.retry.RetryOperator
+import io.github.resilience4j.retry.RetryRegistry
 import org.bullit.dsictwi.config.DeepSeekConfig
+import org.bullit.dsictwi.config.Resilience4jConfig.Companion.DEEPSEEK_CLIENT
 import org.bullit.dsictwi.error.ApiError
 import org.bullit.dsictwi.error.ApplicationErrors
 import org.bullit.dsictwi.toApplicationErrors
@@ -13,8 +16,11 @@ import reactor.core.publisher.Mono
 @Service
 class DeepSeekClient(
     private val config: DeepSeekConfig,
-    private val webClient: WebClient
+    private val webClient: WebClient,
+    retryRegistry: RetryRegistry
 ) {
+    private val retry = retryRegistry.retry(DEEPSEEK_CLIENT)
+
     suspend fun generateCode(messages: List<Message>): Either<ApplicationErrors, DeepSeekResponse> =
         generateCodeReactive(messages)
             .toEither { t -> ApiError(t.message ?: "Error interacting with DeepSeek API") }
@@ -33,9 +39,15 @@ class DeepSeekClient(
             .bodyValue(request)
             .retrieve()
             .bodyToMono(DeepSeekResponse::class.java)
+            .transformDeferred(RetryOperator.of(retry))
+            .onErrorResume { fallback(it) }
     }
 
-    private data class DeepSeekRequest(
+    private fun fallback(e: Throwable): Mono<DeepSeekResponse> {
+        return Mono.error(RuntimeException("Tried too many times", e))
+    }
+
+    data class DeepSeekRequest(
         val messages: List<Message>,
         val model: String,
         val temperature: Double
